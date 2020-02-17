@@ -1,0 +1,1548 @@
+FORM 4.2.1 (Nov 21 2018, v4.2.1) 64-bits         Run: Thu Nov  7 10:14:11 2019
+    Format mathematica;
+    Symbol d;
+    Dimension d;
+    Functions hel,B,U,S,b,bbar,s,sbar,u,ubar,li,
+    photon,gab,f,cvx,pp,ppc,v,ev,vp,bar,mass,G1,G2(a),g,gden;
+    CFunctions ga,pol,vrtx,prop2,p,prop,den,ga1,ga2,ga1b,ga2b,ga2five,hf,eps(a),eta(
+    s),sym,asym,epssign;
+    Indices mu,nu,rho,photind,gluind,mu1,...,mu100,dum1,...,dum10,five;
+    Symbol k,N,i,a1,...,a100,n1,n2,n3,n4,mb,mb2    ,s12,s13,s14,s23,s24,s34,convfac1
+    proj,mark1,...,mark50,asbar,ab,au,aubar,qk1,...,qk4;
+    Vectors pp1,p1,...,p10,q1,...,q10,q,q14,q24,q34,q123,pu,pubar,ps,psbar,pb,pbbar,
+    k1,...,k4;
+    Tensor O1,O,O1c,Obu,Osu,Obuc,Osuc,Ouu,Ouuc,Osb,Osbc;
+    Off Statistics;
+    
+    
+    * Diagrams from QGRAF
+    #include- all3vertxNEWvrtx.h;
+    #include- diagrams1l.h;
+    
+    
+    * Conjugation Routine
+    #include- conjugate.h;
+    
+    * Routines for the Product of Eps*Eps, simplification of eta*eta and the 
+    * Traces from FeynCalc
+    #include- ProdTwoEps_eps_eta.h;
+    #include- etasimp.h
+    #include- tracesNoG5.h;
+    #include- trace12.h;
+    #include- trace14.h;
+    
+    *
+    * split 4-vertex in 2 2-vertices and give them dirac structure
+    * create ga() as prototype to be converted to g_
+    *
+    
+    * resolve the 4-vertex into the
+    * pinguin structure (sbar-b)(ubar-u)
+    
+    id  vrtx(sbar(asbar?,psbar?),u(au?,pu?),ubar(aubar?,pubar?),b(ab?,pb?)) = vrtx(s
+    bar(asbar,psbar),b(ab,pb))*vrtx(ubar(aubar,pubar),u(au,pu));
+    
+    id  vrtx(ubar(aubar?,pubar?),u(au?,pu?)) = ga(aubar,Ouu,au);
+    id  vrtx(sbar(asbar?,psbar?),b(ab?,pb?)) = ga(asbar,Osb,ab);
+    
+    * give the propagator a second index needed for the routine below
+    
+    id prop(f?(a1?,p1?))=prop2(f(a1,a1+1,p1));
+    
+    *
+    * put spinors and propagators in ga-functions
+    * CHECK the sign vs. flow parts!!!
+    *
+    repeat;
+    id ga(?a1,O?,a2?)*prop2(s?(a3?,a2?,p1?))=ga(?a1,O,prop(s(p1)),a3);
+    id pol(photon(n1?,p1?))=p(li(n1),p1);
+    id pol(b?(n1?,p1?))*ga(n1?,?a2)=ga(b(p1),?a2);
+    id pol(b?(n1?,p1?))*ga(?a2,n1?)=ga(?a2,b(p1));
+    id ga(?a1,a2?)*prop2(u?(a2?,a3?,p1?))=ga(?a1,prop(u(p1)),a3);
+    id ga(a1?,?a2)*prop2(u?(a3?,a1?,p1?))=ga(a3,prop(u(p1)),?a2);
+    
+    id ga(a1?,?a2)*prop2(u?(a1?,a3?,p1?))=ga(a3,prop(u(p1)),?a2); *(?SIGN?)
+    
+    *photon vertices
+    
+    id ga(?a1,a2?)*vrtx(ubar?(a2?, p1?),u?(a3?,p2?),photon(a4?,p3?))=ga(?a1,li(photi
+    nd),a3);
+    id ga(a1?,?a2)*vrtx(ubar?(a3?, p1?),u?(a1?,p2?),photon(a4?,p3?))=
+    ga(a3,li(photind),?a2);
+    
+    id ga(a2?,?a1)*vrtx(ubar?(a2?, p1?),u?(a3?,p2?),photon(a4?,p3?))=
+    ga(a3,li(photind),?a1); *(?SIGN?)
+    id ga(?a1,a2?)*vrtx(ubar?(a3?, p1?),u?(a2?,p2?),photon(a4?,p3?))=
+    ga(?a1,li(photind),a3); *(?SIGN?)
+    
+    *gluon vertices
+    
+    id ga(?a1,a2?)*vrtx(ubar?(a2?, p1?),u?(a3?,p2?),g(a4?,p3?))=ga(?a1,li(gluind),a3
+    );
+    id ga(a1?,?a2)*vrtx(ubar?(a3?, p1?),u?(a1?,p2?),g(a4?,p3?))=
+    ga(a3,li(gluind),?a2);
+    
+    id ga(a2?,?a1)*vrtx(ubar?(a2?, p1?),u?(a3?,p2?),g(a4?,p3?))=
+    ga(a3,li(gluind),?a1); *(?SIGN?)
+    id ga(?a1,a2?)*vrtx(ubar?(a3?, p1?),u?(a2?,p2?),g(a4?,p3?))=
+    ga(?a1,li(gluind),a3); *(?SIGN?)
+    
+    id prop2(g(a1?,a2?,p1?))=gden(p1);
+    
+    endrepeat;
+    
+    
+    *
+    * assign number to the lines with b and u respectively
+    *
+    if (occurs(Osb)=1);
+    id,once ga(?a1)=ga2(?a1);
+    endif;
+    if (occurs(Ouu)=1);
+    id,once ga(?a1)=ga1(?a1);
+    endif;
+    
+    *
+    * Conjugate the Diagrams Di-> DiC
+    *
+    
+    .sort 
+    #do j=1,44
+    Hide D'j'OneLoop;
+    #enddo
+    
+    #call conj;
+    
+    
+    *
+    * define the squared Matrix-Elements (1-Loop) * (Tree^*)
+    *
+    
+    .sort
+    #do j=1,44
+    #do i=1,4
+    Local SQOneL'j'Tree'i' = D'j'OneLoop*D'i'treeC;
+    #enddo
+    #enddo
+    .sort
+    #do j=1,44
+    #do i=1,4
+    Hide SQOneL'j'Tree'i';
+    Hide D'j'OneLoop;
+    Hide D'i'treeC;
+    Hide D'i'tree;
+    #enddo
+    #enddo
+    .sort
+    Unhide SQOneL32Tree4;
+    
+    
+    *
+    * replace prop(q,p) by p
+    *
+    
+    repeat;
+    id ga1(?a1,prop(b?(p1?)),?a2)=den(p1)*(ga1(?a1,p1,?a2)+mass(b)*ga1(?a1,?a2));
+    
+    id ga1b(?a1,prop(b?(p1?)),?a2)=den(p1)*(ga1b(?a1,p1,?a2)+mass(b)*ga1b(?a1,?a2));
+    
+    id ga2(?a1,prop(b?(p1?)),?a2)=den(p1)*(ga2(?a1,p1,?a2)+mass(b)*ga2(?a1,?a2));
+    
+    id ga2b(?a1,prop(b?(p1?)),?a2)=den(p1)*(ga2b(?a1,p1,?a2)+mass(b)*ga2b(?a1,?a2));
+    endrepeat;
+    
+    
+    *
+    * use spin sum: hel(X)= X*Xbar
+    * multiplied by helicity-factor hf(fermion) from averaged spin sum 
+    * (1/2 for incoming, 1 for outgoing)
+    *
+    
+    repeat;
+    id ga1(s?(p2?),?a2,b?(p1?))*ga1b(bar(b?(p1?)),?a4,bar(s?(p2?)))=hf(b)*hf(s)*ga1(
+    ?a2,hel(b(p1)),?a4,hel(s(p2)));
+    id ga2(s?(p2?),?a2,b?(p1?))*ga2b(bar(b?(p1?)),?a4,bar(s?(p2?)))=hf(b)*hf(s)*ga2(
+    ?a2,hel(b(p1)),?a4,hel(s(p2)));
+    endrepeat;
+    
+    
+    *
+    * operators-bar bar(O) := Oc
+    *
+    
+    id ga1(?a1,bar(Ouu),?a2)=ga1(?a1,Ouuc,?a2);
+    id ga1(?a1,bar(Osb),?a2)=ga1(?a1,Osbc,?a2);
+    id ga2(?a1,bar(Ouu),?a2)=ga2(?a1,Ouuc,?a2);
+    id ga2(?a1,bar(Osb),?a2)=ga2(?a1,Osbc,?a2);
+    
+    *
+    * replace ubar*u=hel(u) by p_u-m_u (factors 1/2 missing for spin sum)
+    * (in massless case sign doesnt play role, BUT has to be adapted if mu,ms !=0)
+    *
+    
+    repeat;
+    id ga1(?a1,hel(f?(p1?)),?a2)=ga1(?a1,p1,?a2)+mass(f)*ga1(?a1,?a2);
+    id ga2(?a1,hel(f?(p1?)),?a2)=ga2(?a1,p1,?a2)+mass(f)*ga2(?a1,?a2);
+    endrepeat;
+    
+    *
+    * massless outgoing fermions s and u:
+    *
+    
+    repeat;
+    id mass(b)^2=mb2;
+    endrepeat;
+    repeat;
+    id mass(s)=0;
+    id mass(u)=0;
+    id mass(ubar)=0;
+    endrepeat;
+    
+    * "unpack" lorentz-index of photon
+    repeat;
+    id ga?(?a1,li(mu1?),?a3)=ga(?a1,mu1,?a3);
+    endrepeat;
+    
+    
+    * make ga1,2 from CF to F to use chainout
+    .sort
+    Function ga1,ga2;
+    
+    *
+    * convert ga to dirac chains
+    *
+    * put in mu*PL and PR*mu
+    * 
+    * IMPORTANT: mu*PL is only equivalent to PR*mu, if g5 anticommutes!!
+    *
+    
+    chainout ga1;
+    id ga1(Ouu) = ga1(mu);
+    id ga1(Ouuc) = ga1(nu);
+    chainin ga1;
+    
+    chainout ga2;
+    id ga2(Osb) = 1/2*(ga2(mu)-ga2(mu,five));
+    id ga2(Osbc) = 1/2*(ga2(nu)+ga2(five,nu));
+    chainin ga2;
+    
+    
+    *
+    * LARIN SCHEME:
+    *
+    * replace TR(...mu.five...) by i/6*eps(mu,m1,m2,m3)*TR(...m1.m2.m3...):
+    *
+    
+    * replace g5*g5 in trace by unit matrix:  [1610.09331]
+    
+    id ga1(?mu1,five,five,?mu3)=ga1(?mu1,?mu3);
+    id ga2(?mu1,five,five,?mu3)=ga2(?mu1,?mu3);
+    
+    * g5 occurs twice:
+    
+    repeat;
+    id ga1(?mu1,mu2?,five,?mu3,mu4?,five,?mu5)=i/6*i/6*eps(mu2,dum1,dum2,dum3)*eps(m
+    u4,dum4,dum5,dum6)*ga1(?mu1,dum1,dum2,dum3,?mu3,dum4,dum5,dum6,?mu5);
+    id ga2(?mu1,mu2?,five,?mu3,mu4?,five,?mu5)=i/6*i/6*eps(mu2,dum1,dum2,dum3)*eps(m
+    u4,dum4,dum5,dum6)*ga2(?mu1,dum1,dum2,dum3,?mu3,dum4,dum5,dum6,?mu5);
+    endrepeat;
+    
+    * g5 occurs once:
+    
+    id ga1(?mu1,mu2?,five,?mu3)=-a1*i/6*eps(mu2,dum1,dum2,dum3)*ga2(?mu1,dum1,dum2,d
+    um3,?mu3);
+    id ga2(?mu1,mu2?,five,?mu3)=-a1*i/6*eps(mu2,dum1,dum2,dum3)*ga2(?mu1,dum1,dum2,d
+    um3,?mu3);
+    
+    * identities below make sure that terms like ga2(p3+p4) 
+    * are converted to ga2(p3)+ga2(p4)
+    
+    id ga1(mu1?,...,mu6?)=ga1(mu1,...,mu6);
+    id ga1(mu1?,...,mu8?)=ga1(mu1,...,mu8);
+    id ga1(mu1?,...,mu10?)=ga1(mu1,...,mu10);
+    id ga1(mu1?,...,mu12?)=ga1(mu1,...,mu12);
+    id ga1(mu1?,...,mu14?)=ga1(mu1,...,mu14);
+    id ga2(mu1?,...,mu6?)=ga2(mu1,...,mu6);
+    id ga2(mu1?,...,mu8?)=ga2(mu1,...,mu8);
+    id ga2(mu1?,...,mu10?)=ga2(mu1,...,mu10);
+    id ga2(mu1?,...,mu12?)=ga2(mu1,...,mu12);
+    id ga2(mu1?,...,mu14?)=ga2(mu1,...,mu14);
+    
+    
+    *
+    * Plug in Trace-identities (from FeynCalc) and products of eps-tensors
+    *
+    
+    id den(?a1)=1;
+    id p(?a1)=1;
+    id hf(?a1)=1;
+    id gden(?a1)=1;
+    
+    
+    chainout ga1;
+    repeat;
+    id ga1(mu1?)=g_(1,mu1);
+    endrepeat;
+    
+    chainout ga2;
+    repeat;
+    id ga2(mu1?)=g_(2,mu1);
+    endrepeat;
+    
+    
+    
+    Tracen,1;
+    Tracen,2;
+    
+    *#call trace14
+    *#call trace12
+    *#call TracesNoG5
+    *#call etasimp
+    #call EpsProd
+    #call etasimp
+    
+    
+    
+    id den(?a1)=1;
+    id p(?a1)=1;
+    id hf(?a1)=1;
+    id gden(?a1)=1;
+    id eta(p1?,p2?)=p1.p2;
+    
+    
+    repeat;
+    id eta(mu1?,mu1?)=d;
+    id eta(p1?,p2?)=p1.p2;
+    endrepeat;
+    
+    
+    
+    id q123=q1+q2+q3;
+    id mb2=p1.p1;
+    
+    id convfac1proj=1/2;
+    id hf(u)=1;
+    id hf(ubar)=1;
+    id hf(s)=1;
+    id hf(b)=1/2;
+    
+    id p(?a1)=1;
+    
+    repeat;
+    #call EpsProd;
+    endrepeat;
+    
+    id eta(mu1?,mu1?)=d;
+    
+    repeat;
+    id eta(mu1?,p1?)*eps(mu1?,p2?,p3?,p4?)=eps(p1,p2,p3,p4);
+    id eta(mu1?,p1?)*eps(mu1?,mu2?,p3?,p4?)=eps(p1,mu2,p3,p4);
+    id eta(mu1?,p1?)*eps(mu1?,mu2?,mu3?,p4?)=eps(p1,mu2,mu3,p4);
+    
+    id eta(mu1?,mu2?)*eps(mu1?,p2?,p3?,p4?)=eps(mu2,p2,p3,p4);
+    id eta(mu1?,mu2?)*eps(mu1?,mu2?,p3?,p4?)=0;
+    id eta(p1?,p2?)=p1.p2;
+    
+    id eta(mu?,gluind?)*eta(nu?,photind?)*eps(mu?,nu?,p1?,q1?)*eps(photind?,gluind?,
+    q2?,q4?)=eps(mu,nu,p1,q1)*eps(nu,mu,q2,q4);
+    endrepeat;
+    
+    #call EpsProd;
+    repeat;
+    id eta(mu1?,mu1?)=d;
+    id eta(p1?,p2?)=p1.p2;
+    endrepeat;
+    
+    id eps(p1,p2?,p3?,p4?)=eps(q1,p2,p3,p4)+eps(q2,p2,p3,p4)+eps(q3,p2,p3,p4)+eps(q4
+    ,p2,p3,p4);
+    
+    id p1=q1+q2+q3+q4;
+    
+    id q1.q1=0;
+    id q2.q2=0;
+    id q3.q3=0;
+    id q4.q4=0;
+    
+    id k1.k1=k2;
+    
+    id q1.k1=qk1;
+    id q2.k1=qk2;
+    id q3.k1=qk3;
+    id q4.k1=qk4;
+    
+    id q1.q2=s12/2;
+    id q1.q3=s13/2;
+    id q1.q4=s14/2;
+    id q2.q3=s23/2;
+    id q2.q4=s24/2;
+    id q3.q4=s34/2;
+    
+    id i^2=-1;
+    
+    Bracket den,gden;
+    
+    Print +s;
+    .end
+
+   SQOneL32Tree4 =
+       + 384*s34*qk1*qk2*qk3
+          + 320*s34^2*qk1*qk2
+          - 256*s24*qk1*qk3*qk4
+          - 256*s24*qk1*qk3^2
+          - 64*s24*qk1*qk2*qk3
+          - 256*s24*qk1^2*qk3
+          + 64*s24*s34*qk1*qk3
+          + 32*s24*s34*qk1*qk2
+          - 384*s24*s34*qk1^2
+          - 256*s23*qk1*qk3*qk4
+          - 256*s23*qk1*qk3^2
+          - 64*s23*qk1*qk2*qk3
+          - 256*s23*qk1^2*qk3
+          - 384*s23*s34*qk1*qk4
+          - 352*s23*s34*qk1*qk3
+          + 32*s23*s34*qk1*qk2
+          + 64*s23*s34*qk1^2
+          - 64*s23*s34^2*qk1
+          - 32*s23*s24*qk1*qk4
+          - 64*s23*s24*qk1*qk3
+          - 32*s23*s24*s34*qk1
+          - 32*s23^2*qk1*qk3
+          - 128*s14*qk2*qk3*qk4
+          - 128*s14*qk2*qk3^2
+          + 64*s14*qk2^2*qk3
+          + 256*s14*qk1*qk2*qk3
+          - 32*s14*s34*qk2*qk4
+          - 128*s14*s34*qk2*qk3
+          + 32*s14*s34*qk2^2
+          + 384*s14*s34*qk1*qk2
+          - 32*s14*s34^2*qk2
+          - 32*s14*s24*qk3*qk4
+          - 64*s14*s24*qk2*qk3
+          + 128*s14*s24*qk1*qk3
+          + 32*s14*s24*s34*qk3
+          - 32*s14*s24*s34*qk2
+          + 32*s14*s24^2*qk3
+          + 32*s14*s23*qk4^2
+          + 32*s14*s23*qk3*qk4
+          + 32*s14*s23*qk3^2
+          - 32*s14*s23*qk2*qk4
+          - 96*s14*s23*qk2*qk3
+          - 512*s14*s23*qk1*qk4
+          - 384*s14*s23*qk1*qk3
+          + 32*s14*s23*s34*qk4
+          + 32*s14*s23*s34*qk3
+          - 16*s14*s23*s34*qk2
+          - 32*s14*s23*s34*qk1
+          - 32*s14*s23*s24*qk4
+          - 32*s14*s23*s24*s34
+          - 16*s14*s23^2*qk4
+          - 16*s14*s23^2*qk3
+          - 16*s14*s23^2*s34
+          - 128*s14^2*qk2*qk3
+          - 128*s13*qk2*qk3*qk4
+          - 128*s13*qk2*qk3^2
+          + 64*s13*qk2^2*qk3
+          + 256*s13*qk1*qk2*qk3
+          + 64*s13*s34*qk2*qk3
+          + 32*s13*s34*qk2^2
+          - 64*s13*s34*qk1*qk2
+          + 32*s13*s34^2*qk2
+          - 96*s13*s24*qk3*qk4
+          - 64*s13*s24*qk3^2
+          - 32*s13*s24*qk2*qk3
+          + 384*s13*s24*qk1*qk4
+          + 448*s13*s24*qk1*qk3
+          + 16*s13*s24*s34*qk2
+          + 32*s13*s24^2*qk3
+          + 64*s13*s23*qk4^2
+          + 32*s13*s23*qk3*qk4
+          - 64*s13*s23*qk2*qk4
+          - 96*s13*s23*qk2*qk3
+          - 64*s13*s23*qk1*qk4
+          + 32*s13*s23*s34*qk4
+          - 16*s13*s23*s24*qk4
+          + 16*s13*s23*s24*qk3
+          - 16*s13*s23*s24*s34
+          + 128*s13*s14*qk2*qk4
+          - 64*s13*s14*qk2*qk3
+          + 32*s13*s14*s34*qk2
+          + 64*s13^2*qk2*qk4
+          + 256*s12*qk3*qk4^2
+          + 512*s12*qk3^2*qk4
+          + 256*s12*qk3^3
+          + 64*s12*qk2*qk3*qk4
+          + 64*s12*qk2*qk3^2
+          + 256*s12*qk1*qk3*qk4
+          + 256*s12*qk1*qk3^2
+          + 352*s12*s34*qk3*qk4
+          + 192*s12*s34*qk3^2
+          + 288*s12*s34*qk2*qk4
+          - 64*s12*s34*qk2*qk3
+          - 64*s12*s34*qk2^2
+          + 384*s12*s34*qk1*qk4
+          - 128*s12*s34*qk1*qk3
+          - 64*s12*s34*qk1*qk2
+          - 32*s12*s34^2*qk3
+          + 48*s12*s34^2*qk2
+          + 320*s12*s24*qk3*qk4
+          + 256*s12*s24*qk3^2
+          + 64*s12*s24*qk2*qk3
+          + 64*s12*s24*qk1*qk3
+          - 96*s12*s24*s34*qk3
+          + 32*s12*s24*s34*qk2
+          - 32*s12*s24^2*qk3
+          - 288*s12*s23*qk4^2
+          - 192*s12*s23*qk3*qk4
+          + 32*s12*s23*qk3^2
+          + 64*s12*s23*qk2*qk4
+          + 128*s12*s23*qk2*qk3
+          + 64*s12*s23*qk1*qk3
+          + 48*s12*s23*s34*qk4
+          + 80*s12*s23*s34*qk3
+          + 48*s12*s23*s34^2
+          + 32*s12*s23*s24*qk4
+          + 32*s12*s23*s24*s34
+          + 384*s12*s14*qk3*qk4
+          + 320*s12*s14*qk3^2
+          - 32*s12*s14*s34*qk3
+          + 32*s12*s14*s34*qk2
+          - 32*s12*s14*s24*qk3
+          + 32*s12*s14*s23*qk4
+          + 32*s12*s14*s23*qk3
+          + 32*s12*s14*s23*s34
+          - 384*s12*s13*qk4^2
+          - 320*s12*s13*qk3*qk4
+          + 64*s12*s13*qk2*qk4
+          + 64*s12*s13*qk2*qk3
+          - 32*s12*s13*s24*qk3
+          - 64*s12^2*qk3*qk4
+          - 64*s12^2*qk3^2
+          + 32*s12^2*s34*qk3
+          - 1280/3*d*s34*qk1*qk2*qk3
+          - 360*d*s34^2*qk1*qk2
+          + 944/3*d*s24*qk1*qk3*qk4
+          + 944/3*d*s24*qk1*qk3^2
+          + 128/3*d*s24*qk1*qk2*qk3
+          + 256*d*s24*qk1^2*qk3
+          - 104*d*s24*s34*qk1*qk3
+          - 16/3*d*s24*s34*qk1*qk2
+          + 400*d*s24*s34*qk1^2
+          - 32*d*s24^2*qk1*qk3
+          + 944/3*d*s23*qk1*qk3*qk4
+          + 944/3*d*s23*qk1*qk3^2
+          + 128/3*d*s23*qk1*qk2*qk3
+          + 256*d*s23*qk1^2*qk3
+          + 448*d*s23*s34*qk1*qk4
+          + 1192/3*d*s23*s34*qk1*qk3
+          - 16/3*d*s23*s34*qk1*qk2
+          - 40*d*s23*s34*qk1^2
+          + 88*d*s23*s34^2*qk1
+          + 112/3*d*s23*s24*qk1*qk4
+          + 32/3*d*s23*s24*qk1*qk3
+          + 112/3*d*s23*s24*s34*qk1
+          + 16/3*d*s23^2*qk1*qk3
+          + 112*d*s14*qk2*qk3*qk4
+          + 112*d*s14*qk2*qk3^2
+          - 128/3*d*s14*qk2^2*qk3
+          - 256*d*s14*qk1*qk2*qk3
+          + 64/3*d*s14*s34*qk2*qk4
+          + 112*d*s14*s34*qk2*qk3
+          - 16/3*d*s14*s34*qk2^2
+          - 400*d*s14*s34*qk1*qk2
+          + 64/3*d*s14*s34^2*qk2
+          + 64/3*d*s14*s24*qk3*qk4
+          + 128/3*d*s14*s24*qk2*qk3
+          - 128*d*s14*s24*qk1*qk3
+          - 64/3*d*s14*s24*s34*qk3
+          + 64/3*d*s14*s24*s34*qk2
+          - 64/3*d*s14*s24^2*qk3
+          - 64/3*d*s14*s23*qk4^2
+          - 64/3*d*s14*s23*qk3*qk4
+          - 64/3*d*s14*s23*qk3^2
+          + 16/3*d*s14*s23*qk2*qk4
+          + 48*d*s14*s23*qk2*qk3
+          + 528*d*s14*s23*qk1*qk4
+          + 416*d*s14*s23*qk1*qk3
+          - 64/3*d*s14*s23*s34*qk4
+          - 64/3*d*s14*s23*s34*qk3
+          + 32/3*d*s14*s23*s34*qk2
+          + 52*d*s14*s23*s34*qk1
+          + 64/3*d*s14*s23*s24*qk4
+          + 64/3*d*s14*s23*s24*s34
+          + 32/3*d*s14*s23^2*qk4
+          + 32/3*d*s14*s23^2*qk3
+          + 32/3*d*s14*s23^2*s34
+          + 128*d*s14^2*qk2*qk3
+          + 112*d*s13*qk2*qk3*qk4
+          + 112*d*s13*qk2*qk3^2
+          - 128/3*d*s13*qk2^2*qk3
+          - 256*d*s13*qk1*qk2*qk3
+          - 16*d*s13*s34*qk2*qk4
+          - 368/3*d*s13*s34*qk2*qk3
+          - 16/3*d*s13*s34*qk2^2
+          + 40*d*s13*s34*qk1*qk2
+          - 52*d*s13*s34^2*qk2
+          + 280/3*d*s13*s24*qk3*qk4
+          + 72*d*s13*s24*qk3^2
+          - 32*d*s13*s24*qk2*qk4
+          - 80/3*d*s13*s24*qk2*qk3
+          - 400*d*s13*s24*qk1*qk4
+          - 456*d*s13*s24*qk1*qk3
+          + 44/3*d*s13*s24*s34*qk3
+          - 80/3*d*s13*s24*s34*qk2
+          - 64/3*d*s13*s24^2*qk3
+          - 72*d*s13*s23*qk4^2
+          - 152/3*d*s13*s23*qk3*qk4
+          + 32/3*d*s13*s23*qk2*qk4
+          + 16*d*s13*s23*qk2*qk3
+          + 40*d*s13*s23*qk1*qk4
+          - 36*d*s13*s23*s34*qk4
+          + 32/3*d*s13*s23*s24*qk4
+          - 32/3*d*s13*s23*s24*qk3
+          + 32/3*d*s13*s23*s24*s34
+          - 128*d*s13*s14*qk2*qk4
+          + 40*d*s13*s14*qk2*qk3
+          - 52*d*s13*s14*s34*qk2
+          - 40*d*s13^2*qk2*qk4
+          - 944/3*d*s12*qk3*qk4^2
+          - 1888/3*d*s12*qk3^2*qk4
+          - 944/3*d*s12*qk3^3
+          - 160*d*s12*qk2*qk3*qk4
+          - 160*d*s12*qk2*qk3^2
+          - 256*d*s12*qk1*qk3*qk4
+          - 256*d*s12*qk1*qk3^2
+          - 1096/3*d*s12*s34*qk3*qk4
+          - 168*d*s12*s34*qk3^2
+          - 1016/3*d*s12*s34*qk2*qk4
+          + 208/3*d*s12*s34*qk2*qk3
+          + 72*d*s12*s34*qk2^2
+          - 400*d*s12*s34*qk1*qk4
+          + 144*d*s12*s34*qk1*qk3
+          + 72*d*s12*s34*qk1*qk2
+          + 112/3*d*s12*s34^2*qk3
+          - 232/3*d*s12*s34^2*qk2
+          - 344*d*s12*s24*qk3*qk4
+          - 256*d*s12*s24*qk3^2
+          - 72*d*s12*s24*qk2*qk3
+          - 72*d*s12*s24*qk1*qk3
+          + 376/3*d*s12*s24*s34*qk3
+          - 52*d*s12*s24*s34*qk2
+          + 52*d*s12*s24^2*qk3
+          + 1016/3*d*s12*s23*qk4^2
+          + 736/3*d*s12*s23*qk3*qk4
+          - 16/3*d*s12*s23*qk3^2
+          - 72*d*s12*s23*qk2*qk4
+          - 144*d*s12*s23*qk2*qk3
+          - 72*d*s12*s23*qk1*qk3
+          - 48*d*s12*s23*s34*qk4
+          - 344/3*d*s12*s23*s34*qk3
+          - 188/3*d*s12*s23*s34^2
+          - 52*d*s12*s23*s24*qk4
+          - 52*d*s12*s23*s24*s34
+          - 400*d*s12*s14*qk3*qk4
+          - 312*d*s12*s14*qk3^2
+          + 52*d*s12*s14*s34*qk3
+          - 52*d*s12*s14*s34*qk2
+          + 52*d*s12*s14*s24*qk3
+          - 52*d*s12*s14*s23*qk4
+          - 52*d*s12*s14*s23*qk3
+          - 52*d*s12*s14*s23*s34
+          + 400*d*s12*s13*qk4^2
+          + 312*d*s12*s13*qk3*qk4
+          - 72*d*s12*s13*qk2*qk4
+          - 72*d*s12*s13*qk2*qk3
+          + 52*d*s12*s13*s24*qk3
+          + 72*d*s12^2*qk3*qk4
+          + 72*d*s12^2*qk3^2
+          - 52*d*s12^2*s34*qk3
+          + 160*d^2*s34*qk1*qk2*qk3
+          + 156*d^2*s34^2*qk1*qk2
+          - 416/3*d^2*s24*qk1*qk3*qk4
+          - 416/3*d^2*s24*qk1*qk3^2
+          - 12*d^2*s24*qk1*qk2*qk3
+          - 92*d^2*s24*qk1^2*qk3
+          + 214/3*d^2*s24*s34*qk1*qk3
+          - 4*d^2*s24*s34*qk1*qk2
+          - 164*d^2*s24*s34*qk1^2
+          + 62/3*d^2*s24^2*qk1*qk3
+          - 416/3*d^2*s23*qk1*qk3*qk4
+          - 416/3*d^2*s23*qk1*qk3^2
+          - 12*d^2*s23*qk1*qk2*qk3
+          - 92*d^2*s23*qk1^2*qk3
+          - 202*d^2*s23*s34*qk1*qk4
+          - 496/3*d^2*s23*s34*qk1*qk3
+          - 4*d^2*s23*s34*qk1*qk2
+          + 8*d^2*s23*s34*qk1^2
+          - 46*d^2*s23*s34^2*qk1
+          - 50/3*d^2*s23*s24*qk1*qk4
+          + 8*d^2*s23*s24*qk1*qk3
+          - 50/3*d^2*s23*s24*s34*qk1
+          + 4*d^2*s23^2*qk1*qk3
+          - 64/3*d^2*s14*qk2*qk3*qk4
+          - 64/3*d^2*s14*qk2*qk3^2
+          + 12*d^2*s14*qk2^2*qk3
+          + 92*d^2*s14*qk1*qk2*qk3
+          + 4/3*d^2*s14*s34*qk2*qk4
+          - 130/3*d^2*s14*s34*qk2*qk3
+          - 4*d^2*s14*s34*qk2^2
+          + 164*d^2*s14*s34*qk1*qk2
+          + 4/3*d^2*s14*s34^2*qk2
+          + 4/3*d^2*s14*s24*qk3*qk4
+          - 38/3*d^2*s14*s24*qk2*qk3
+          + 54*d^2*s14*s24*qk1*qk3
+          - 4/3*d^2*s14*s24*s34*qk3
+          + 4/3*d^2*s14*s24*s34*qk2
+          - 4/3*d^2*s14*s24^2*qk3
+          - 4/3*d^2*s14*s23*qk4^2
+          - 4/3*d^2*s14*s23*qk3*qk4
+          - 4/3*d^2*s14*s23*qk3^2
+          + 4*d^2*s14*s23*qk2*qk4
+          - 26/3*d^2*s14*s23*qk2*qk3
+          - 218*d^2*s14*s23*qk1*qk4
+          - 182*d^2*s14*s23*qk1*qk3
+          - 4/3*d^2*s14*s23*s34*qk4
+          - 4/3*d^2*s14*s23*s34*qk3
+          + 2/3*d^2*s14*s23*s34*qk2
+          - 32*d^2*s14*s23*s34*qk1
+          + 4/3*d^2*s14*s23*s24*qk4
+          + 4/3*d^2*s14*s23*s24*s34
+          + 2/3*d^2*s14*s23^2*qk4
+          + 2/3*d^2*s14*s23^2*qk3
+          + 2/3*d^2*s14*s23^2*s34
+          - 54*d^2*s14^2*qk2*qk3
+          - 64/3*d^2*s13*qk2*qk3*qk4
+          - 64/3*d^2*s13*qk2*qk3^2
+          + 12*d^2*s13*qk2^2*qk3
+          + 92*d^2*s13*qk1*qk2*qk3
+          + 18*d^2*s13*s34*qk2*qk4
+          + 64*d^2*s13*s34*qk2*qk3
+          - 4*d^2*s13*s34*qk2^2
+          - 8*d^2*s13*s34*qk1*qk2
+          + 32*d^2*s13*s34^2*qk2
+          - 80/3*d^2*s13*s24*qk3*qk4
+          - 28*d^2*s13*s24*qk3^2
+          + 62/3*d^2*s13*s24*qk2*qk4
+          + 74/3*d^2*s13*s24*qk2*qk3
+          + 164*d^2*s13*s24*qk1*qk4
+          + 190*d^2*s13*s24*qk1*qk3
+          - 46/3*d^2*s13*s24*s34*qk3
+          + 52/3*d^2*s13*s24*s34*qk2
+          - 4/3*d^2*s13*s24^2*qk3
+          + 28*d^2*s13*s23*qk4^2
+          + 88/3*d^2*s13*s23*qk3*qk4
+          + 8*d^2*s13*s23*qk2*qk4
+          + 12*d^2*s13*s23*qk2*qk3
+          - 8*d^2*s13*s23*qk1*qk4
+          + 14*d^2*s13*s23*s34*qk4
+          + 2/3*d^2*s13*s23*s24*qk4
+          - 2/3*d^2*s13*s23*s24*qk3
+          + 2/3*d^2*s13*s23*s24*s34
+          + 54*d^2*s13*s14*qk2*qk4
+          - 8*d^2*s13*s14*qk2*qk3
+          + 32*d^2*s13*s14*s34*qk2
+          + 8*d^2*s13^2*qk2*qk4
+          + 416/3*d^2*s12*qk3*qk4^2
+          + 832/3*d^2*s12*qk3^2*qk4
+          + 416/3*d^2*s12*qk3^3
+          + 316/3*d^2*s12*qk2*qk3*qk4
+          + 316/3*d^2*s12*qk2*qk3^2
+          + 92*d^2*s12*qk1*qk3*qk4
+          + 92*d^2*s12*qk1*qk3^2
+          + 388/3*d^2*s12*s34*qk3*qk4
+          + 116/3*d^2*s12*s34*qk3^2
+          + 472/3*d^2*s12*s34*qk2*qk4
+          - 160/3*d^2*s12*s34*qk2*qk3
+          - 28*d^2*s12*s34*qk2^2
+          + 164*d^2*s12*s34*qk1*qk4
+          - 72*d^2*s12*s34*qk1*qk3
+          - 28*d^2*s12*s34*qk1*qk2
+          - 50/3*d^2*s12*s34^2*qk3
+          + 140/3*d^2*s12*s34^2*qk2
+          + 460/3*d^2*s12*s24*qk3*qk4
+          + 322/3*d^2*s12*s24*qk3^2
+          + 28*d^2*s12*s24*qk2*qk3
+          + 28*d^2*s12*s24*qk1*qk3
+          - 188/3*d^2*s12*s24*s34*qk3
+          + 32*d^2*s12*s24*s34*qk2
+          - 32*d^2*s12*s24^2*qk3
+          - 472/3*d^2*s12*s23*qk4^2
+          - 346/3*d^2*s12*s23*qk3*qk4
+          - 4*d^2*s12*s23*qk3^2
+          + 28*d^2*s12*s23*qk2*qk4
+          + 56*d^2*s12*s23*qk2*qk3
+          + 28*d^2*s12*s23*qk1*qk3
+          + 16*d^2*s12*s23*s34*qk4
+          + 190/3*d^2*s12*s23*s34*qk3
+          + 94/3*d^2*s12*s23*s34^2
+          + 32*d^2*s12*s23*s24*qk4
+          + 32*d^2*s12*s23*s24*s34
+          + 164*d^2*s12*s14*qk3*qk4
+          + 118*d^2*s12*s14*qk3^2
+          - 32*d^2*s12*s14*s34*qk3
+          + 32*d^2*s12*s14*s34*qk2
+          - 32*d^2*s12*s14*s24*qk3
+          + 32*d^2*s12*s14*s23*qk4
+          + 32*d^2*s12*s14*s23*qk3
+          + 32*d^2*s12*s14*s23*s34
+          - 164*d^2*s12*s13*qk4^2
+          - 118*d^2*s12*s13*qk3*qk4
+          + 28*d^2*s12*s13*qk2*qk4
+          + 28*d^2*s12*s13*qk2*qk3
+          - 32*d^2*s12*s13*s24*qk3
+          - 28*d^2*s12^2*qk3*qk4
+          - 28*d^2*s12^2*qk3^2
+          + 32*d^2*s12^2*s34*qk3
+          - 64/3*d^3*s34*qk1*qk2*qk3
+          - 30*d^3*s34^2*qk1*qk2
+          + 76/3*d^3*s24*qk1*qk3*qk4
+          + 76/3*d^3*s24*qk1*qk3^2
+          + 4/3*d^3*s24*qk1*qk2*qk3
+          + 12*d^3*s24*qk1^2*qk3
+          - 77/3*d^3*s24*s34*qk1*qk3
+          + 4/3*d^3*s24*s34*qk1*qk2
+          + 30*d^3*s24*s34*qk1^2
+          - 5*d^3*s24^2*qk1*qk3
+          + 76/3*d^3*s23*qk1*qk3*qk4
+          + 76/3*d^3*s23*qk1*qk3^2
+          + 4/3*d^3*s23*qk1*qk2*qk3
+          + 12*d^3*s23*qk1^2*qk3
+          + 41*d^3*s23*s34*qk1*qk4
+          + 26*d^3*s23*s34*qk1*qk3
+          + 4/3*d^3*s23*s34*qk1*qk2
+          + 11*d^3*s23*s34^2*qk1
+          + 11/3*d^3*s23*s24*qk1*qk4
+          - 8/3*d^3*s23*s24*qk1*qk3
+          + 11/3*d^3*s23*s24*s34*qk1
+          - 4/3*d^3*s23^2*qk1*qk3
+          - 4*d^3*s14*qk2*qk3*qk4
+          - 4*d^3*s14*qk2*qk3^2
+          - 4/3*d^3*s14*qk2^2*qk3
+          - 12*d^3*s14*qk1*qk2*qk3
+          - 10/3*d^3*s14*s34*qk2*qk4
+          + 35/3*d^3*s14*s34*qk2*qk3
+          + 4/3*d^3*s14*s34*qk2^2
+          - 30*d^3*s14*s34*qk1*qk2
+          - 10/3*d^3*s14*s34^2*qk2
+          - 10/3*d^3*s14*s24*qk3*qk4
+          + 7/3*d^3*s14*s24*qk2*qk3
+          - 11*d^3*s14*s24*qk1*qk3
+          + 10/3*d^3*s14*s24*s34*qk3
+          - 10/3*d^3*s14*s24*s34*qk2
+          + 10/3*d^3*s14*s24^2*qk3
+          + 10/3*d^3*s14*s23*qk4^2
+          + 10/3*d^3*s14*s23*qk3*qk4
+          + 10/3*d^3*s14*s23*qk3^2
+          - 4/3*d^3*s14*s23*qk2*qk4
+          + d^3*s14*s23*qk2*qk3
+          + 41*d^3*s14*s23*qk1*qk4
+          + 37*d^3*s14*s23*qk1*qk3
+          + 10/3*d^3*s14*s23*s34*qk4
+          + 10/3*d^3*s14*s23*s34*qk3
+          - 5/3*d^3*s14*s23*s34*qk2
+          + 9*d^3*s14*s23*s34*qk1
+          - 10/3*d^3*s14*s23*s24*qk4
+          - 10/3*d^3*s14*s23*s24*s34
+          - 5/3*d^3*s14*s23^2*qk4
+          - 5/3*d^3*s14*s23^2*qk3
+          - 5/3*d^3*s14*s23^2*s34
+          + 11*d^3*s14^2*qk2*qk3
+          - 4*d^3*s13*qk2*qk3*qk4
+          - 4*d^3*s13*qk2*qk3^2
+          - 4/3*d^3*s13*qk2^2*qk3
+          - 12*d^3*s13*qk1*qk2*qk3
+          - 7*d^3*s13*s34*qk2*qk4
+          - 32/3*d^3*s13*s34*qk2*qk3
+          + 4/3*d^3*s13*s34*qk2^2
+          - 9*d^3*s13*s34^2*qk2
+          + 2/3*d^3*s13*s24*qk3*qk4
+          + 4*d^3*s13*s24*qk3^2
+          - 5*d^3*s13*s24*qk2*qk4
+          - 19/3*d^3*s13*s24*qk2*qk3
+          - 30*d^3*s13*s24*qk1*qk4
+          - 37*d^3*s13*s24*qk1*qk3
+          + 16/3*d^3*s13*s24*s34*qk3
+          - 16/3*d^3*s13*s24*s34*qk2
+          + 10/3*d^3*s13*s24^2*qk3
+          - 4*d^3*s13*s23*qk4^2
+          - 22/3*d^3*s13*s23*qk3*qk4
+          - 8/3*d^3*s13*s23*qk2*qk4
+          - 4*d^3*s13*s23*qk2*qk3
+          - 2*d^3*s13*s23*s34*qk4
+          - 5/3*d^3*s13*s23*s24*qk4
+          + 5/3*d^3*s13*s23*s24*qk3
+          - 5/3*d^3*s13*s23*s24*s34
+          - 11*d^3*s13*s14*qk2*qk4
+          - 9*d^3*s13*s14*s34*qk2
+          - 76/3*d^3*s12*qk3*qk4^2
+          - 152/3*d^3*s12*qk3^2*qk4
+          - 76/3*d^3*s12*qk3^3
+          - 28*d^3*s12*qk2*qk3*qk4
+          - 28*d^3*s12*qk2*qk3^2
+          - 12*d^3*s12*qk1*qk3*qk4
+          - 12*d^3*s12*qk1*qk3^2
+          - 12*d^3*s12*s34*qk3*qk4
+          + 20/3*d^3*s12*s34*qk3^2
+          - 100/3*d^3*s12*s34*qk2*qk4
+          + 26*d^3*s12*s34*qk2*qk3
+          + 4*d^3*s12*s34*qk2^2
+          - 30*d^3*s12*s34*qk1*qk4
+          + 18*d^3*s12*s34*qk1*qk3
+          + 4*d^3*s12*s34*qk1*qk2
+          + 11/3*d^3*s12*s34^2*qk3
+          - 38/3*d^3*s12*s34^2*qk2
+          - 32*d^3*s12*s24*qk3*qk4
+          - 21*d^3*s12*s24*qk3^2
+          - 4*d^3*s12*s24*qk2*qk3
+          - 4*d^3*s12*s24*qk1*qk3
+          + 44/3*d^3*s12*s24*s34*qk3
+          - 9*d^3*s12*s24*s34*qk2
+          + 9*d^3*s12*s24^2*qk3
+          + 100/3*d^3*s12*s23*qk4^2
+          + 71/3*d^3*s12*s23*qk3*qk4
+          + 4/3*d^3*s12*s23*qk3^2
+          - 4*d^3*s12*s23*qk2*qk4
+          - 8*d^3*s12*s23*qk2*qk3
+          - 4*d^3*s12*s23*qk1*qk3
+          - 2*d^3*s12*s23*s34*qk4
+          - 49/3*d^3*s12*s23*s34*qk3
+          - 22/3*d^3*s12*s23*s34^2
+          - 9*d^3*s12*s23*s24*qk4
+          - 9*d^3*s12*s23*s24*s34
+          - 30*d^3*s12*s14*qk3*qk4
+          - 19*d^3*s12*s14*qk3^2
+          + 9*d^3*s12*s14*s34*qk3
+          - 9*d^3*s12*s14*s34*qk2
+          + 9*d^3*s12*s14*s24*qk3
+          - 9*d^3*s12*s14*s23*qk4
+          - 9*d^3*s12*s14*s23*qk3
+          - 9*d^3*s12*s14*s23*s34
+          + 30*d^3*s12*s13*qk4^2
+          + 19*d^3*s12*s13*qk3*qk4
+          - 4*d^3*s12*s13*qk2*qk4
+          - 4*d^3*s12*s13*qk2*qk3
+          + 9*d^3*s12*s13*s24*qk3
+          + 4*d^3*s12^2*qk3*qk4
+          + 4*d^3*s12^2*qk3^2
+          - 9*d^3*s12^2*s34*qk3
+          + 2*d^4*s34^2*qk1*qk2
+          - 4/3*d^4*s24*qk1*qk3*qk4
+          - 4/3*d^4*s24*qk1*qk3^2
+          + 14/3*d^4*s24*s34*qk1*qk3
+          - 2*d^4*s24*s34*qk1^2
+          + 1/3*d^4*s24^2*qk1*qk3
+          - 4/3*d^4*s23*qk1*qk3*qk4
+          - 4/3*d^4*s23*qk1*qk3^2
+          - 3*d^4*s23*s34*qk1*qk4
+          + 1/3*d^4*s23*s34*qk1*qk3
+          - d^4*s23*s34^2*qk1
+          - 1/3*d^4*s23*s24*qk1*qk4
+          - 1/3*d^4*s23*s24*s34*qk1
+          + 4/3*d^4*s14*qk2*qk3*qk4
+          + 4/3*d^4*s14*qk2*qk3^2
+          + 2/3*d^4*s14*s34*qk2*qk4
+          - 8/3*d^4*s14*s34*qk2*qk3
+          + 2*d^4*s14*s34*qk1*qk2
+          + 2/3*d^4*s14*s34^2*qk2
+          + 2/3*d^4*s14*s24*qk3*qk4
+          - 1/3*d^4*s14*s24*qk2*qk3
+          + d^4*s14*s24*qk1*qk3
+          - 2/3*d^4*s14*s24*s34*qk3
+          + 2/3*d^4*s14*s24*s34*qk2
+          - 2/3*d^4*s14*s24^2*qk3
+          - 2/3*d^4*s14*s23*qk4^2
+          - 2/3*d^4*s14*s23*qk3*qk4
+          - 2/3*d^4*s14*s23*qk3^2
+          - 1/3*d^4*s14*s23*qk2*qk3
+          - 3*d^4*s14*s23*qk1*qk4
+          - 3*d^4*s14*s23*qk1*qk3
+          - 2/3*d^4*s14*s23*s34*qk4
+          - 2/3*d^4*s14*s23*s34*qk3
+          + 1/3*d^4*s14*s23*s34*qk2
+          - d^4*s14*s23*s34*qk1
+          + 2/3*d^4*s14*s23*s24*qk4
+          + 2/3*d^4*s14*s23*s24*s34
+          + 1/3*d^4*s14*s23^2*qk4
+          + 1/3*d^4*s14*s23^2*qk3
+          + 1/3*d^4*s14*s23^2*s34
+          - d^4*s14^2*qk2*qk3
+          + 4/3*d^4*s13*qk2*qk3*qk4
+          + 4/3*d^4*s13*qk2*qk3^2
+          + d^4*s13*s34*qk2*qk4
+          - d^4*s13*s34*qk2*qk3
+          + d^4*s13*s34^2*qk2
+          + 2/3*d^4*s13*s24*qk3*qk4
+          + 1/3*d^4*s13*s24*qk2*qk4
+          + 1/3*d^4*s13*s24*qk2*qk3
+          + 2*d^4*s13*s24*qk1*qk4
+          + 3*d^4*s13*s24*qk1*qk3
+          - 2/3*d^4*s13*s24*s34*qk3
+          + 2/3*d^4*s13*s24*s34*qk2
+          - 2/3*d^4*s13*s24^2*qk3
+          + 2/3*d^4*s13*s23*qk3*qk4
+          + 1/3*d^4*s13*s23*s24*qk4
+          - 1/3*d^4*s13*s23*s24*qk3
+          + 1/3*d^4*s13*s23*s24*s34
+          + d^4*s13*s14*qk2*qk4
+          + d^4*s13*s14*s34*qk2
+          + 4/3*d^4*s12*qk3*qk4^2
+          + 8/3*d^4*s12*qk3^2*qk4
+          + 4/3*d^4*s12*qk3^3
+          + 8/3*d^4*s12*qk2*qk3*qk4
+          + 8/3*d^4*s12*qk2*qk3^2
+          - 7/3*d^4*s12*s34*qk3*qk4
+          - 11/3*d^4*s12*s34*qk3^2
+          + 8/3*d^4*s12*s34*qk2*qk4
+          - 20/3*d^4*s12*s34*qk2*qk3
+          + 2*d^4*s12*s34*qk1*qk4
+          - 2*d^4*s12*s34*qk1*qk3
+          - 1/3*d^4*s12*s34^2*qk3
+          + 4/3*d^4*s12*s34^2*qk2
+          + 8/3*d^4*s12*s24*qk3*qk4
+          + 5/3*d^4*s12*s24*qk3^2
+          - 4/3*d^4*s12*s24*s34*qk3
+          + d^4*s12*s24*s34*qk2
+          - d^4*s12*s24^2*qk3
+          - 8/3*d^4*s12*s23*qk4^2
+          - 5/3*d^4*s12*s23*qk3*qk4
+          + 5/3*d^4*s12*s23*s34*qk3
+          + 2/3*d^4*s12*s23*s34^2
+          + d^4*s12*s23*s24*qk4
+          + d^4*s12*s23*s24*s34
+          + 2*d^4*s12*s14*qk3*qk4
+          + d^4*s12*s14*qk3^2
+          - d^4*s12*s14*s34*qk3
+          + d^4*s12*s14*s34*qk2
+          - d^4*s12*s14*s24*qk3
+          + d^4*s12*s14*s23*qk4
+          + d^4*s12*s14*s23*qk3
+          + d^4*s12*s14*s23*s34
+          - 2*d^4*s12*s13*qk4^2
+          - d^4*s12*s13*qk3*qk4
+          - d^4*s12*s13*s24*qk3
+          + d^4*s12^2*s34*qk3
+          - 1/3*d^5*s24*s34*qk1*qk3
+          - 1/3*d^5*s23*s34*qk1*qk3
+          + 1/3*d^5*s14*s34*qk2*qk3
+          + 1/3*d^5*s13*s34*qk2*qk3
+          + 1/3*d^5*s12*s34*qk3*qk4
+          + 1/3*d^5*s12*s34*qk3^2
+          + 2/3*d^5*s12*s34*qk2*qk3
+          + 224*k2*s24*s34*qk1
+          - 160*k2*s23*s34*qk1
+          + 32*k2*s23*s24*qk1
+          + 32*k2*s23^2*qk1
+          + 16*k2*s14*s34*qk2
+          - 16*k2*s14*s24*qk3
+          + 16*k2*s14*s24*s34
+          + 80*k2*s14*s23*qk4
+          + 64*k2*s14*s23*qk3
+          - 48*k2*s14*s23*qk2
+          - 160*k2*s14*s23*qk1
+          + 56*k2*s14*s23*s34
+          + 8*k2*s14*s23*s24
+          + 8*k2*s14*s23^2
+          + 48*k2*s14^2*s23
+          + 112*k2*s13*s34*qk2
+          - 32*k2*s13*s24*qk4
+          - 48*k2*s13*s24*qk3
+          + 16*k2*s13*s24*qk2
+          + 192*k2*s13*s24*qk1
+          + 24*k2*s13*s24*s34
+          + 24*k2*s13*s24^2
+          + 48*k2*s13*s23*qk4
+          + 32*k2*s13*s23*qk3
+          - 32*k2*s13*s23*qk2
+          + 32*k2*s13*s23*qk1
+          + 32*k2*s13*s23*s34
+          + 56*k2*s13*s23*s24
+          + 32*k2*s13*s23^2
+          - 32*k2*s13*s14*qk2
+          - 48*k2*s13*s14*s24
+          + 32*k2*s13*s14*s23
+          - 32*k2*s13^2*qk2
+          - 32*k2*s13^2*s24
+          - 192*k2*s12*s34*qk4
+          - 128*k2*s12*s34*qk3
+          + 32*k2*s12*s34*qk2
+          - 64*k2*s12*s34*qk1
+          - 184*k2*s12*s34^2
+          + 16*k2*s12*s24*qk3
+          - 184*k2*s12*s24*s34
+          - 80*k2*s12*s23*qk4
+          - 64*k2*s12*s23*qk3
+          + 56*k2*s12*s23*s34
+          - 32*k2*s12*s23*s24
+          - 32*k2*s12*s23^2
+          + 32*k2*s12*s14*qk3
+          - 208*k2*s12*s14*s34
+          + 16*k2*s12*s14*s23
+          - 128*k2*s12*s13*qk4
+          - 96*k2*s12*s13*qk3
+          + 32*k2*s12*s13*s34
+          - 48*k2*s12*s13*s24
+          - 32*k2*s12*s13*s23
+          + 48*k2*s12^2*s34
+          - 844/3*k2*d*s24*s34*qk1
+          + 496/3*k2*d*s23*s34*qk1
+          - 64/3*k2*d*s23*s24*qk1
+          - 64/3*k2*d*s23^2*qk1
+          - 80/3*k2*d*s14*s34*qk2
+          + 76/3*k2*d*s14*s24*qk3
+          - 32/3*k2*d*s14*s24*s34
+          - 220/3*k2*d*s14*s23*qk4
+          - 48*k2*d*s14*s23*qk3
+          + 40*k2*d*s14*s23*qk2
+          + 188*k2*d*s14*s23*qk1
+          - 130/3*k2*d*s14*s23*s34
+          + 8/3*k2*d*s14*s23*s24
+          + 8/3*k2*d*s14*s23^2
+          - 38*k2*d*s14^2*s23
+          - 316/3*k2*d*s13*s34*qk2
+          + 40/3*k2*d*s13*s24*qk4
+          + 116/3*k2*d*s13*s24*qk3
+          - 56/3*k2*d*s13*s24*qk2
+          - 224*k2*d*s13*s24*qk1
+          - 70/3*k2*d*s13*s24*s34
+          - 8*k2*d*s13*s24^2
+          - 60*k2*d*s13*s23*qk4
+          - 104/3*k2*d*s13*s23*qk3
+          + 64/3*k2*d*s13*s23*qk2
+          - 36*k2*d*s13*s23*qk1
+          - 20*k2*d*s13*s23*s34
+          - 40/3*k2*d*s13*s23*s24
+          - 16/3*k2*d*s13*s23^2
+          + 36*k2*d*s13*s14*qk2
+          + 38*k2*d*s13*s14*s24
+          - 20*k2*d*s13*s14*s23
+          + 36*k2*d*s13^2*qk2
+          + 20*k2*d*s13^2*s24
+          + 268*k2*d*s12*s34*qk4
+          + 496/3*k2*d*s12*s34*qk3
+          + 68/3*k2*d*s12*s34*qk2
+          + 88*k2*d*s12*s34*qk1
+          + 634/3*k2*d*s12*s34^2
+          - 100/3*k2*d*s12*s24*qk3
+          + 196*k2*d*s12*s24*s34
+          + 316/3*k2*d*s12*s23*qk4
+          + 72*k2*d*s12*s23*qk3
+          - 224/3*k2*d*s12*s23*s34
+          + 36*k2*d*s12*s23*s24
+          + 36*k2*d*s12*s23^2
+          - 44*k2*d*s12*s14*qk3
+          + 226*k2*d*s12*s14*s34
+          - 26*k2*d*s12*s14*s23
+          + 136*k2*d*s12*s13*qk4
+          + 92*k2*d*s12*s13*qk3
+          - 20*k2*d*s12*s13*s34
+          + 62*k2*d*s12*s13*s24
+          + 36*k2*d*s12*s13*s23
+          - 62*k2*d*s12^2*s34
+          + 422/3*k2*d^2*s24*s34*qk1
+          - 178/3*k2*d^2*s23*s34*qk1
+          + 6*k2*d^2*s23*s24*qk1
+          + 6*k2*d^2*s23^2*qk1
+          + 6*k2*d^2*s14*s34*qk2
+          - 44/3*k2*d^2*s14*s24*qk3
+          - 2/3*k2*d^2*s14*s24*s34
+          + 24*k2*d^2*s14*s23*qk4
+          + 28/3*k2*d^2*s14*s23*qk3
+          - 43/3*k2*d^2*s14*s23*qk2
+          - 87*k2*d^2*s14*s23*qk1
+          + 32/3*k2*d^2*s14*s23*s34
+          - 5/3*k2*d^2*s14*s23*s24
+          - 5/3*k2*d^2*s14*s23^2
+          + 11*k2*d^2*s14^2*s23
+          + 98/3*k2*d^2*s13*s34*qk2
+          + 8/3*k2*d^2*s13*s24*qk4
+          - 12*k2*d^2*s13*s24*qk3
+          + 25/3*k2*d^2*s13*s24*qk2
+          + 101*k2*d^2*s13*s24*qk1
+          + 20/3*k2*d^2*s13*s24*s34
+          - 7/3*k2*d^2*s13*s24^2
+          + 80/3*k2*d^2*s13*s23*qk4
+          + 12*k2*d^2*s13*s23*qk3
+          - 6*k2*d^2*s13*s23*qk2
+          + 14*k2*d^2*s13*s23*qk1
+          + 4*k2*d^2*s13*s23*s34
+          - 19/3*k2*d^2*s13*s23*s24
+          - 4*k2*d^2*s13*s23^2
+          - 14*k2*d^2*s13*s14*qk2
+          - 11*k2*d^2*s13*s14*s24
+          + 4*k2*d^2*s13*s14*s23
+          - 14*k2*d^2*s13^2*qk2
+          - 4*k2*d^2*s13^2*s24
+          - 430/3*k2*d^2*s12*s34*qk4
+          - 82*k2*d^2*s12*s34*qk3
+          - 142/3*k2*d^2*s12*s34*qk2
+          - 46*k2*d^2*s12*s34*qk1
+          - 281/3*k2*d^2*s12*s34^2
+          + 71/3*k2*d^2*s12*s24*qk3
+          - 254/3*k2*d^2*s12*s24*s34
+          - 155/3*k2*d^2*s12*s23*qk4
+          - 28*k2*d^2*s12*s23*qk3
+          + 113/3*k2*d^2*s12*s23*s34
+          - 14*k2*d^2*s12*s23*s24
+          - 14*k2*d^2*s12*s23^2
+          + 23*k2*d^2*s12*s14*qk3
+          - 98*k2*d^2*s12*s14*s34
+          + 16*k2*d^2*s12*s14*s23
+          - 55*k2*d^2*s12*s13*qk4
+          - 32*k2*d^2*s12*s13*qk3
+          + 4*k2*d^2*s12*s13*s34
+          - 30*k2*d^2*s12*s13*s24
+          - 14*k2*d^2*s12*s13*s23
+          + 30*k2*d^2*s12^2*s34
+          - 34*k2*d^3*s24*s34*qk1
+          + 19/3*k2*d^3*s23*s34*qk1
+          - 2/3*k2*d^3*s23*s24*qk1
+          - 2/3*k2*d^3*s23^2*qk1
+          + 3*k2*d^3*s14*s34*qk2
+          + 11/3*k2*d^3*s14*s24*qk3
+          + 5/3*k2*d^3*s14*s24*s34
+          - 8/3*k2*d^3*s14*s23*qk4
+          + k2*d^3*s14*s23*qk3
+          + 5/2*k2*d^3*s14*s23*qk2
+          + 37/2*k2*d^3*s14*s23*qk1
+          - 1/6*k2*d^3*s14*s23*s34
+          - 1/6*k2*d^3*s14*s23*s24
+          - 1/6*k2*d^3*s14*s23^2
+          - k2*d^3*s14^2*s23
+          - 4/3*k2*d^3*s13*s34*qk2
+          - 7/3*k2*d^3*s13*s24*qk4
+          + 4/3*k2*d^3*s13*s24*qk3
+          - 11/6*k2*d^3*s13*s24*qk2
+          - 41/2*k2*d^3*s13*s24*qk1
+          - 1/6*k2*d^3*s13*s24*s34
+          + 3/2*k2*d^3*s13*s24^2
+          - 5*k2*d^3*s13*s23*qk4
+          - 4/3*k2*d^3*s13*s23*qk3
+          + 2/3*k2*d^3*s13*s23*qk2
+          - 2*k2*d^3*s13*s23*qk1
+          + 17/6*k2*d^3*s13*s23*s24
+          + 4/3*k2*d^3*s13*s23^2
+          + 2*k2*d^3*s13*s14*qk2
+          + k2*d^3*s13*s14*s24
+          + 2*k2*d^3*s13^2*qk2
+          + 109/3*k2*d^3*s12*s34*qk4
+          + 20*k2*d^3*s12*s34*qk3
+          + 23*k2*d^3*s12*s34*qk2
+          + 11*k2*d^3*s12*s34*qk1
+          + 56/3*k2*d^3*s12*s34^2
+          - 43/6*k2*d^3*s12*s24*qk3
+          + 17*k2*d^3*s12*s24*s34
+          + 67/6*k2*d^3*s12*s23*qk4
+          + 4*k2*d^3*s12*s23*qk3
+          - 53/6*k2*d^3*s12*s23*s34
+          + 2*k2*d^3*s12*s23*s24
+          + 2*k2*d^3*s12*s23^2
+          - 11/2*k2*d^3*s12*s14*qk3
+          + 39/2*k2*d^3*s12*s14*s34
+          - 9/2*k2*d^3*s12*s14*s23
+          + 19/2*k2*d^3*s12*s13*qk4
+          + 4*k2*d^3*s12*s13*qk3
+          + 13/2*k2*d^3*s12*s13*s24
+          + 2*k2*d^3*s12*s13*s23
+          - 13/2*k2*d^3*s12^2*s34
+          + 23/6*k2*d^4*s24*s34*qk1
+          + 5/6*k2*d^4*s23*s34*qk1
+          - 3/2*k2*d^4*s14*s34*qk2
+          - 1/3*k2*d^4*s14*s24*qk3
+          - 1/3*k2*d^4*s14*s24*s34
+          - 1/3*k2*d^4*s14*s23*qk3
+          - 1/6*k2*d^4*s14*s23*qk2
+          - 3/2*k2*d^4*s14*s23*qk1
+          - 1/6*k2*d^4*s14*s23*s34
+          + 1/6*k2*d^4*s14*s23*s24
+          + 1/6*k2*d^4*s14*s23^2
+          - 7/6*k2*d^4*s13*s34*qk2
+          + 1/3*k2*d^4*s13*s24*qk4
+          + 1/6*k2*d^4*s13*s24*qk2
+          + 3/2*k2*d^4*s13*s24*qk1
+          - 1/6*k2*d^4*s13*s24*s34
+          - 1/6*k2*d^4*s13*s24^2
+          + 1/3*k2*d^4*s13*s23*qk4
+          - 1/6*k2*d^4*s13*s23*s24
+          - 25/6*k2*d^4*s12*s34*qk4
+          - 5/2*k2*d^4*s12*s34*qk3
+          - 14/3*k2*d^4*s12*s34*qk2
+          - k2*d^4*s12*s34*qk1
+          - 4/3*k2*d^4*s12*s34^2
+          + 5/6*k2*d^4*s12*s24*qk3
+          - 4/3*k2*d^4*s12*s24*s34
+          - 5/6*k2*d^4*s12*s23*qk4
+          + 5/6*k2*d^4*s12*s23*s34
+          + 1/2*k2*d^4*s12*s14*qk3
+          - 3/2*k2*d^4*s12*s14*s34
+          + 1/2*k2*d^4*s12*s14*s23
+          - 1/2*k2*d^4*s12*s13*qk4
+          - 1/2*k2*d^4*s12*s13*s24
+          + 1/2*k2*d^4*s12^2*s34
+          - 1/6*k2*d^5*s24*s34*qk1
+          - 1/6*k2*d^5*s23*s34*qk1
+          + 1/6*k2*d^5*s14*s34*qk2
+          + 1/6*k2*d^5*s13*s34*qk2
+          + 1/6*k2*d^5*s12*s34*qk4
+          + 1/6*k2*d^5*s12*s34*qk3
+          + 1/3*k2*d^5*s12*s34*qk2
+          + 288*eps[q1,q2,q3,q4]*i*a1*qk4^2
+          + 576*eps[q1,q2,q3,q4]*i*a1*qk3*qk4
+          + 288*eps[q1,q2,q3,q4]*i*a1*qk3^2
+          + 960*eps[q1,q2,q3,q4]*i*a1*qk2*qk4
+          + 960*eps[q1,q2,q3,q4]*i*a1*qk2*qk3
+          + 96*eps[q1,q2,q3,q4]*i*a1*qk2^2
+          + 928*eps[q1,q2,q3,q4]*i*a1*qk1*qk4
+          + 928*eps[q1,q2,q3,q4]*i*a1*qk1*qk3
+          - 96*eps[q1,q2,q3,q4]*i*a1*qk1*qk2
+          + 144*eps[q1,q2,q3,q4]*i*a1*s34*qk2
+          + 64*eps[q1,q2,q3,q4]*i*a1*s34*qk1
+          - 192*eps[q1,q2,q3,q4]*i*a1*s24*qk4
+          - 192*eps[q1,q2,q3,q4]*i*a1*s24*qk3
+          + 144*eps[q1,q2,q3,q4]*i*a1*s24*qk2
+          - 144*eps[q1,q2,q3,q4]*i*a1*s24*qk1
+          - 192*eps[q1,q2,q3,q4]*i*a1*s23*qk4
+          - 192*eps[q1,q2,q3,q4]*i*a1*s23*qk3
+          + 96*eps[q1,q2,q3,q4]*i*a1*s23*qk2
+          - 96*eps[q1,q2,q3,q4]*i*a1*s23*qk1
+          - 384*eps[q1,q2,q3,q4]*i*a1*s12*qk4
+          - 384*eps[q1,q2,q3,q4]*i*a1*s12*qk3
+          - 48*eps[q1,q2,q3,q4]*d*i*a1*qk4^2
+          - 96*eps[q1,q2,q3,q4]*d*i*a1*qk3*qk4
+          - 48*eps[q1,q2,q3,q4]*d*i*a1*qk3^2
+          - 352*eps[q1,q2,q3,q4]*d*i*a1*qk2*qk4
+          - 352*eps[q1,q2,q3,q4]*d*i*a1*qk2*qk3
+          - 272*eps[q1,q2,q3,q4]*d*i*a1*qk1*qk4
+          - 272*eps[q1,q2,q3,q4]*d*i*a1*qk1*qk3
+          - 24*eps[q1,q2,q3,q4]*d*i*a1*s34*qk2
+          - 32*eps[q1,q2,q3,q4]*d*i*a1*s34*qk1
+          + 32*eps[q1,q2,q3,q4]*d*i*a1*s24*qk4
+          + 32*eps[q1,q2,q3,q4]*d*i*a1*s24*qk3
+          - 24*eps[q1,q2,q3,q4]*d*i*a1*s24*qk2
+          + 24*eps[q1,q2,q3,q4]*d*i*a1*s24*qk1
+          + 32*eps[q1,q2,q3,q4]*d*i*a1*s23*qk4
+          + 32*eps[q1,q2,q3,q4]*d*i*a1*s23*qk3
+          + 112*eps[q1,q2,q3,q4]*d*i*a1*s12*qk4
+          + 112*eps[q1,q2,q3,q4]*d*i*a1*s12*qk3
+          + 32*eps[q1,q2,q3,q4]*d^2*i*a1*qk2*qk4
+          + 32*eps[q1,q2,q3,q4]*d^2*i*a1*qk2*qk3
+          + 16*eps[q1,q2,q3,q4]*d^2*i*a1*qk1*qk4
+          + 16*eps[q1,q2,q3,q4]*d^2*i*a1*qk1*qk3
+          - 8*eps[q1,q2,q3,q4]*d^2*i*a1*s12*qk4
+          - 8*eps[q1,q2,q3,q4]*d^2*i*a1*s12*qk3
+          + 144*eps[q1,q2,q3,q4]*k2*i*a1*qk4
+          + 144*eps[q1,q2,q3,q4]*k2*i*a1*qk3
+          + 432*eps[q1,q2,q3,q4]*k2*i*a1*qk2
+          + 512*eps[q1,q2,q3,q4]*k2*i*a1*qk1
+          - 96*eps[q1,q2,q3,q4]*k2*i*a1*s34
+          - 168*eps[q1,q2,q3,q4]*k2*i*a1*s24
+          - 144*eps[q1,q2,q3,q4]*k2*i*a1*s23
+          - 24*eps[q1,q2,q3,q4]*k2*i*a1*s14
+          - 16*eps[q1,q2,q3,q4]*k2*i*a1*s13
+          - 192*eps[q1,q2,q3,q4]*k2*i*a1*s12
+          - 24*eps[q1,q2,q3,q4]*k2*d*i*a1*qk4
+          - 24*eps[q1,q2,q3,q4]*k2*d*i*a1*qk3
+          - 176*eps[q1,q2,q3,q4]*k2*d*i*a1*qk2
+          - 136*eps[q1,q2,q3,q4]*k2*d*i*a1*qk1
+          + 16*eps[q1,q2,q3,q4]*k2*d*i*a1*s34
+          + 28*eps[q1,q2,q3,q4]*k2*d*i*a1*s24
+          + 16*eps[q1,q2,q3,q4]*k2*d*i*a1*s23
+          + 4*eps[q1,q2,q3,q4]*k2*d*i*a1*s14
+          + 56*eps[q1,q2,q3,q4]*k2*d*i*a1*s12
+          + 16*eps[q1,q2,q3,q4]*k2*d^2*i*a1*qk2
+          + 8*eps[q1,q2,q3,q4]*k2*d^2*i*a1*qk1
+          - 4*eps[q1,q2,q3,q4]*k2*d^2*i*a1*s12
+          + 128*eps[q1,q2,q3,k1]*i*a1*qk3*qk4
+          + 128*eps[q1,q2,q3,k1]*i*a1*qk3^2
+          + 256*eps[q1,q2,q3,k1]*i*a1*qk2*qk3
+          + 256*eps[q1,q2,q3,k1]*i*a1*qk1*qk3
+          + 48*eps[q1,q2,q3,k1]*i*a1*s34*qk4
+          - 80*eps[q1,q2,q3,k1]*i*a1*s34*qk3
+          - 48*eps[q1,q2,q3,k1]*i*a1*s34*qk2
+          - 16*eps[q1,q2,q3,k1]*i*a1*s34*qk1
+          + 48*eps[q1,q2,q3,k1]*i*a1*s24*qk4
+          - 112*eps[q1,q2,q3,k1]*i*a1*s24*qk3
+          - 48*eps[q1,q2,q3,k1]*i*a1*s24*qk2
+          - 72*eps[q1,q2,q3,k1]*i*a1*s24*s34
+          - 72*eps[q1,q2,q3,k1]*i*a1*s24^2
+          + 48*eps[q1,q2,q3,k1]*i*a1*s23*qk4
+          - 64*eps[q1,q2,q3,k1]*i*a1*s23*qk3
+          - 48*eps[q1,q2,q3,k1]*i*a1*s23*s24
+          - 96*eps[q1,q2,q3,k1]*i*a1*s14*qk4
+          - 128*eps[q1,q2,q3,k1]*i*a1*s14*qk3
+          + 48*eps[q1,q2,q3,k1]*i*a1*s14*qk2
+          + 72*eps[q1,q2,q3,k1]*i*a1*s14*s24
+          + 48*eps[q1,q2,q3,k1]*i*a1*s14*s23
+          + 16*eps[q1,q2,q3,k1]*i*a1*s13*qk4
+          - 128*eps[q1,q2,q3,k1]*i*a1*s12*qk3
+          - 64*eps[q1,q2,q3,k1]*d*i*a1*qk2*qk3
+          - 32*eps[q1,q2,q3,k1]*d*i*a1*qk1*qk3
+          - 8*eps[q1,q2,q3,k1]*d*i*a1*s34*qk4
+          + 24*eps[q1,q2,q3,k1]*d*i*a1*s34*qk3
+          - 8*eps[q1,q2,q3,k1]*d*i*a1*s24*qk4
+          + 16*eps[q1,q2,q3,k1]*d*i*a1*s24*qk3
+          + 12*eps[q1,q2,q3,k1]*d*i*a1*s24*s34
+          + 12*eps[q1,q2,q3,k1]*d*i*a1*s24^2
+          + 16*eps[q1,q2,q3,k1]*d*i*a1*s14*qk4
+          + 24*eps[q1,q2,q3,k1]*d*i*a1*s14*qk3
+          - 12*eps[q1,q2,q3,k1]*d*i*a1*s14*s24
+          + 16*eps[q1,q2,q3,k1]*d*i*a1*s12*qk3
+          - 72*eps[q1,q2,q3,k1]*k2*i*a1*s34
+          - 24*eps[q1,q2,q3,k1]*k2*i*a1*s24
+          - 96*eps[q1,q2,q3,k1]*k2*i*a1*s14
+          - 32*eps[q1,q2,q3,k1]*k2*i*a1*s13
+          + 12*eps[q1,q2,q3,k1]*k2*d*i*a1*s34
+          + 8*eps[q1,q2,q3,k1]*k2*d*i*a1*s24
+          + 12*eps[q1,q2,q3,k1]*k2*d*i*a1*s14
+          + 128*eps[q1,q2,q4,k1]*i*a1*qk3*qk4
+          + 128*eps[q1,q2,q4,k1]*i*a1*qk3^2
+          + 256*eps[q1,q2,q4,k1]*i*a1*qk2*qk3
+          + 256*eps[q1,q2,q4,k1]*i*a1*qk1*qk3
+          + 144*eps[q1,q2,q4,k1]*i*a1*s34*qk4
+          + 16*eps[q1,q2,q4,k1]*i*a1*s34*qk3
+          + 456*eps[q1,q2,q4,k1]*i*a1*s34*qk2
+          + 312*eps[q1,q2,q4,k1]*i*a1*s34*qk1
+          - 136*eps[q1,q2,q4,k1]*i*a1*s24*qk3
+          - 96*eps[q1,q2,q4,k1]*i*a1*s24*s34
+          + 24*eps[q1,q2,q4,k1]*i*a1*s23*qk4
+          - 64*eps[q1,q2,q4,k1]*i*a1*s23*qk3
+          + 48*eps[q1,q2,q4,k1]*i*a1*s23*qk2
+          - 24*eps[q1,q2,q4,k1]*i*a1*s23*s34
+          + 72*eps[q1,q2,q4,k1]*i*a1*s23*s24
+          + 48*eps[q1,q2,q4,k1]*i*a1*s23^2
+          - 56*eps[q1,q2,q4,k1]*i*a1*s14*qk3
+          + 152*eps[q1,q2,q4,k1]*i*a1*s13*qk4
+          + 112*eps[q1,q2,q4,k1]*i*a1*s13*qk3
+          - 48*eps[q1,q2,q4,k1]*i*a1*s13*qk2
+          + 32*eps[q1,q2,q4,k1]*i*a1*s13*s34
+          - 72*eps[q1,q2,q4,k1]*i*a1*s13*s24
+          - 48*eps[q1,q2,q4,k1]*i*a1*s13*s23
+          - 128*eps[q1,q2,q4,k1]*i*a1*s12*qk3
+          - 192*eps[q1,q2,q4,k1]*i*a1*s12*s34
+          - 64*eps[q1,q2,q4,k1]*d*i*a1*qk2*qk3
+          - 32*eps[q1,q2,q4,k1]*d*i*a1*qk1*qk3
+          - 24*eps[q1,q2,q4,k1]*d*i*a1*s34*qk4
+          + 8*eps[q1,q2,q4,k1]*d*i*a1*s34*qk3
+          - 172*eps[q1,q2,q4,k1]*d*i*a1*s34*qk2
+          - 100*eps[q1,q2,q4,k1]*d*i*a1*s34*qk1
+          + 12*eps[q1,q2,q4,k1]*d*i*a1*s24*qk3
+          + 16*eps[q1,q2,q4,k1]*d*i*a1*s24*s34
+          - 4*eps[q1,q2,q4,k1]*d*i*a1*s23*qk4
+          - 16*eps[q1,q2,q4,k1]*d*i*a1*s23*qk3
+          + 4*eps[q1,q2,q4,k1]*d*i*a1*s23*s34
+          - 12*eps[q1,q2,q4,k1]*d*i*a1*s23*s24
+          + 20*eps[q1,q2,q4,k1]*d*i*a1*s14*qk3
+          - 36*eps[q1,q2,q4,k1]*d*i*a1*s13*qk4
+          - 24*eps[q1,q2,q4,k1]*d*i*a1*s13*qk3
+          - 16*eps[q1,q2,q4,k1]*d*i*a1*s13*s34
+          + 12*eps[q1,q2,q4,k1]*d*i*a1*s13*s24
+          + 16*eps[q1,q2,q4,k1]*d*i*a1*s12*qk3
+          + 56*eps[q1,q2,q4,k1]*d*i*a1*s12*s34
+          + 16*eps[q1,q2,q4,k1]*d^2*i*a1*s34*qk2
+          + 8*eps[q1,q2,q4,k1]*d^2*i*a1*s34*qk1
+          - 4*eps[q1,q2,q4,k1]*d^2*i*a1*s12*s34
+          - 24*eps[q1,q2,q4,k1]*k2*i*a1*s34
+          + 24*eps[q1,q2,q4,k1]*k2*i*a1*s23
+          + 64*eps[q1,q2,q4,k1]*k2*i*a1*s13
+          + 4*eps[q1,q2,q4,k1]*k2*d*i*a1*s34
+          - 8*eps[q1,q2,q4,k1]*k2*d*i*a1*s23
+          - 12*eps[q1,q2,q4,k1]*k2*d*i*a1*s13
+          + 544*eps[q1,q3,q4,k1]*i*a1*s34*qk2
+          - 144*eps[q1,q3,q4,k1]*i*a1*s24*qk4
+          - 112*eps[q1,q3,q4,k1]*i*a1*s24*qk3
+          + 64*eps[q1,q3,q4,k1]*i*a1*s24*qk2
+          - 216*eps[q1,q3,q4,k1]*i*a1*s24*qk1
+          + 96*eps[q1,q3,q4,k1]*i*a1*s24^2
+          - 112*eps[q1,q3,q4,k1]*i*a1*s23*qk4
+          - 80*eps[q1,q3,q4,k1]*i*a1*s23*qk3
+          + 64*eps[q1,q3,q4,k1]*i*a1*s23*qk2
+          - 144*eps[q1,q3,q4,k1]*i*a1*s23*qk1
+          + 160*eps[q1,q3,q4,k1]*i*a1*s23*s24
+          + 64*eps[q1,q3,q4,k1]*i*a1*s23^2
+          + 216*eps[q1,q3,q4,k1]*i*a1*s14*qk2
+          + 144*eps[q1,q3,q4,k1]*i*a1*s13*qk2
+          - 248*eps[q1,q3,q4,k1]*i*a1*s12*qk4
+          - 192*eps[q1,q3,q4,k1]*i*a1*s12*qk3
+          + 176*eps[q1,q3,q4,k1]*i*a1*s12*qk2
+          - 32*eps[q1,q3,q4,k1]*i*a1*s12*s34
+          + 264*eps[q1,q3,q4,k1]*i*a1*s12*s24
+          + 176*eps[q1,q3,q4,k1]*i*a1*s12*s23
+          - 176*eps[q1,q3,q4,k1]*d*i*a1*s34*qk2
+          + 24*eps[q1,q3,q4,k1]*d*i*a1*s24*qk4
+          + 8*eps[q1,q3,q4,k1]*d*i*a1*s24*qk3
+          + 60*eps[q1,q3,q4,k1]*d*i*a1*s24*qk1
+          - 16*eps[q1,q3,q4,k1]*d*i*a1*s24^2
+          + 8*eps[q1,q3,q4,k1]*d*i*a1*s23*qk4
+          - 8*eps[q1,q3,q4,k1]*d*i*a1*s23*qk3
+          + 16*eps[q1,q3,q4,k1]*d*i*a1*s23*qk1
+          - 16*eps[q1,q3,q4,k1]*d*i*a1*s23*s24
+          - 60*eps[q1,q3,q4,k1]*d*i*a1*s14*qk2
+          - 16*eps[q1,q3,q4,k1]*d*i*a1*s13*qk2
+          + 76*eps[q1,q3,q4,k1]*d*i*a1*s12*qk4
+          + 40*eps[q1,q3,q4,k1]*d*i*a1*s12*qk3
+          - 16*eps[q1,q3,q4,k1]*d*i*a1*s12*qk2
+          + 16*eps[q1,q3,q4,k1]*d*i*a1*s12*s34
+          - 68*eps[q1,q3,q4,k1]*d*i*a1*s12*s24
+          - 16*eps[q1,q3,q4,k1]*d*i*a1*s12*s23
+          + 16*eps[q1,q3,q4,k1]*d^2*i*a1*s34*qk2
+          - 4*eps[q1,q3,q4,k1]*d^2*i*a1*s24*qk1
+          + 4*eps[q1,q3,q4,k1]*d^2*i*a1*s14*qk2
+          - 4*eps[q1,q3,q4,k1]*d^2*i*a1*s12*qk4
+          + 4*eps[q1,q3,q4,k1]*d^2*i*a1*s12*s24
+          - 8*eps[q1,q3,q4,k1]*k2*i*a1*s24
+          - 8*eps[q1,q3,q4,k1]*k2*i*a1*s23
+          - 128*eps[q1,q3,q4,k1]*k2*i*a1*s12
+          - 4*eps[q1,q3,q4,k1]*k2*d*i*a1*s24
+          - 4*eps[q1,q3,q4,k1]*k2*d*i*a1*s23
+          + 20*eps[q1,q3,q4,k1]*k2*d*i*a1*s12
+          - 288*eps[q2,q3,q4,k1]*i*a1*s34*qk1
+          - 168*eps[q2,q3,q4,k1]*i*a1*s24*qk1
+          - 112*eps[q2,q3,q4,k1]*i*a1*s23*qk1
+          - 48*eps[q2,q3,q4,k1]*i*a1*s14*qk4
+          - 16*eps[q2,q3,q4,k1]*i*a1*s14*qk3
+          + 232*eps[q2,q3,q4,k1]*i*a1*s14*qk2
+          + 96*eps[q2,q3,q4,k1]*i*a1*s14*s24
+          + 64*eps[q2,q3,q4,k1]*i*a1*s14*s23
+          - 80*eps[q2,q3,q4,k1]*i*a1*s13*qk4
+          - 48*eps[q2,q3,q4,k1]*i*a1*s13*qk3
+          + 176*eps[q2,q3,q4,k1]*i*a1*s13*qk2
+          - 32*eps[q2,q3,q4,k1]*i*a1*s13*s34
+          + 96*eps[q2,q3,q4,k1]*i*a1*s13*s24
+          + 64*eps[q2,q3,q4,k1]*i*a1*s13*s23
+          - 200*eps[q2,q3,q4,k1]*i*a1*s12*qk4
+          - 144*eps[q2,q3,q4,k1]*i*a1*s12*qk3
+          + 176*eps[q2,q3,q4,k1]*i*a1*s12*qk2
+          + 136*eps[q2,q3,q4,k1]*i*a1*s12*s34
+          + 264*eps[q2,q3,q4,k1]*i*a1*s12*s24
+          + 176*eps[q2,q3,q4,k1]*i*a1*s12*s23
+          + 96*eps[q2,q3,q4,k1]*d*i*a1*s34*qk1
+          + 52*eps[q2,q3,q4,k1]*d*i*a1*s24*qk1
+          + 16*eps[q2,q3,q4,k1]*d*i*a1*s23*qk1
+          + 8*eps[q2,q3,q4,k1]*d*i*a1*s14*qk4
+          - 8*eps[q2,q3,q4,k1]*d*i*a1*s14*qk3
+          - 52*eps[q2,q3,q4,k1]*d*i*a1*s14*qk2
+          - 16*eps[q2,q3,q4,k1]*d*i*a1*s14*s24
+          + 24*eps[q2,q3,q4,k1]*d*i*a1*s13*qk4
+          + 8*eps[q2,q3,q4,k1]*d*i*a1*s13*qk3
+          - 16*eps[q2,q3,q4,k1]*d*i*a1*s13*qk2
+          + 16*eps[q2,q3,q4,k1]*d*i*a1*s13*s34
+          - 16*eps[q2,q3,q4,k1]*d*i*a1*s13*s24
+          + 68*eps[q2,q3,q4,k1]*d*i*a1*s12*qk4
+          + 32*eps[q2,q3,q4,k1]*d*i*a1*s12*qk3
+          - 16*eps[q2,q3,q4,k1]*d*i*a1*s12*qk2
+          - 36*eps[q2,q3,q4,k1]*d*i*a1*s12*s34
+          - 68*eps[q2,q3,q4,k1]*d*i*a1*s12*s24
+          - 16*eps[q2,q3,q4,k1]*d*i*a1*s12*s23
+          - 8*eps[q2,q3,q4,k1]*d^2*i*a1*s34*qk1
+          - 4*eps[q2,q3,q4,k1]*d^2*i*a1*s24*qk1
+          + 4*eps[q2,q3,q4,k1]*d^2*i*a1*s14*qk2
+          - 4*eps[q2,q3,q4,k1]*d^2*i*a1*s12*qk4
+          + 4*eps[q2,q3,q4,k1]*d^2*i*a1*s12*s34
+          + 4*eps[q2,q3,q4,k1]*d^2*i*a1*s12*s24
+          - 56*eps[q2,q3,q4,k1]*k2*i*a1*s14
+          - 56*eps[q2,q3,q4,k1]*k2*i*a1*s13
+          - 104*eps[q2,q3,q4,k1]*k2*i*a1*s12
+          + 4*eps[q2,q3,q4,k1]*k2*d*i*a1*s14
+          + 4*eps[q2,q3,q4,k1]*k2*d*i*a1*s13
+          + 16*eps[q2,q3,q4,k1]*k2*d*i*a1*s12
+         ;
+
+  50.07 sec out of 50.08 sec

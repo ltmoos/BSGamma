@@ -1,0 +1,52 @@
+FORM 4.2.1 (Nov 21 2018, v4.2.1) 64-bits         Run: Thu Nov  7 09:55:51 2019
+    Dimension d;
+TraceFormVSMath.frm Line 1 --> Warning: Implicit declaration of d as a symbol
+    Functions hel,B,U,S,b,bbar,s,sbar,u,ubar,li,
+    photon,gab,f,cvx,pp,ppc,v,ev,vp,bar,mass,G1,G2(a),g,gden;
+    CFunctions ga,pol,vrtx,prop2,p,prop,den,ga1,ga2,ga1b,ga2b,ga2five,hf,eps(a),eta(
+    s),sym,asym,epssign;
+    Indices mu,nu,rho,photind,gluind,mu1,...,mu100,dum1,...,dum10,five;
+    Symbol d,d1,k,N,i,a1,...,a100,n1,n2,n3,n4,mb,mb2    ,s12,s13,s14,s23,s24,s34,con
+    vfac1proj,mark1,...,mark50,asbar,ab,au,aubar,qk1,...,qk4;
+    Vectors pp1,p1,...,p10,q1,...,q10,q,q14,q24,q34,q123,pu,pubar,ps,psbar,pb,pbbar,
+    k1,...,k4;
+    Tensor O1,O,O1c,Obu,Osu,Obuc,Osuc,Ouu,Ouuc,Osb,Osbc;
+    On Statistics;
+    
+    
+    #include- trace14.h;
+    #include- etasimp.h;
+    
+    
+    
+    *Local trfrm=g_(1,mu1,mu2,mu3,mu4,mu5,mu6,mu7,mu1,mu2,mu3,mu4,mu5,mu6,mu7);
+    
+    
+    *Tracen,1;
+    
+    *.sort
+    
+    Local trmat=ga1(mu1,mu2,mu3,mu4,mu5,mu6,mu7,mu1,mu2,mu3,mu4,mu5,mu6,mu7);
+    #call trace14
+    #call etasimp
+    
+    
+    
+    p+s;
+    .end
+
+Time =       5.33 sec    Generated terms =     135135
+           trmat         Terms in output =          7
+                         Bytes used      =        180
+
+   trmat =
+       - 15616*d
+       + 36736*d^2
+       - 31360*d^3
+       + 12320*d^4
+       - 2240*d^5
+       + 168*d^6
+       - 4*d^7
+      ;
+
+  5.33 sec out of 5.34 sec
